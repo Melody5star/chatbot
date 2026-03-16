@@ -1,9 +1,3 @@
-## 📄 File 2: `requirements.txt`
-```
 streamlit
 anthropic
 python-dotenv
-```
-
----
-
