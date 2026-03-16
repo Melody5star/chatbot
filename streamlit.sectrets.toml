@@ -1,0 +1,17 @@
+ANTHROPIC_API_KEY = "your_api_key_here"
+```
+
+> This is used when deploying on **Streamlit Cloud** instead of `.env`
+
+---
+
+## 📁 Final Folder Structure
+```
+ai-chatbot/
+├── .streamlit/
+│   └── secrets.toml        ← for Streamlit Cloud deployment
+├── app.py                  ← main chatbot code
+├── requirements.txt        ← dependencies
+├── .env.example            ← safe to push (no real key)
+├── .gitignore              ← protects your .env
+└── README.md               ← (the one I gave earlier)
