@@ -1,18 +1,14 @@
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 
-api_key = st.secrets.get("GEMINI_API_KEY")
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-2.0-flash")
+client = Groq(api_key=st.secrets.get("GROQ_API_KEY"))
 
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
 st.title("🤖 AI Chatbot")
-st.caption("Powered by Gemini AI · Ask me anything!")
+st.caption("Powered by Groq AI · Ask me anything!")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "chat" not in st.session_state:
-    st.session_state.chat = model.start_chat(history=[])
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -27,8 +23,12 @@ if user_input:
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = st.session_state.chat.send_message(user_input)
-            reply = response.text
+            response = client.chat.completions.create(
+                model="llama3-8b-8192",
+                messages=st.session_state.messages,
+                max_tokens=1000
+            )
+            reply = response.choices[0].message.content
             st.markdown(reply)
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
@@ -37,7 +37,6 @@ with st.sidebar:
     st.header("⚙️ Settings")
     if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
-        st.session_state.chat = model.start_chat(history=[])
         st.rerun()
     st.divider()
-    st.caption("Built with Gemini API + Streamlit")
+    st.caption("Built with Groq API + Streamlit")
