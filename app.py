@@ -23,12 +23,12 @@ if user_input:
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-           response = client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=[
-        {
-            "role": "system",
-            "content": """You are a helpful Indian business assistant who speaks both Hindi and English fluently.
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """You are a helpful Indian business assistant who speaks both Hindi and English fluently.
 
 LANGUAGE RULES:
 - If user writes in Hindi → reply in Hindi
@@ -47,16 +47,11 @@ YOUR PERSONALITY:
 - Friendly aur helpful — jaise ek trusted business advisor
 - Practical advice do — theoretical nahi
 - Simple language use karo — jargon avoid karo
-- Encouraging aur positive raho
-
-Example responses:
-- If asked in Hindi: 'Bilkul! GST registration ke liye aapko...'
-- If asked in English: 'Sure! For GST registration you need to...'
-- If asked in Hinglish: 'Arey bilkul! GST ke baare mein baat karte hain...'"""
-        }
-    ] + st.session_state.messages,
-    max_tokens=1000
-)
+- Encouraging aur positive raho"""
+                    }
+                ] + st.session_state.messages,
+                max_tokens=1000
+            )
             reply = response.choices[0].message.content
             st.markdown(reply)
 
