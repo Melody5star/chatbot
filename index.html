@@ -39,8 +39,6 @@
   const chatBox = document.getElementById("chat-box");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
-
-  
   const history = [];
 
   function addMessage(role, text) {
@@ -56,7 +54,7 @@
     if (!text) return;
 
     addMessage("user", text);
-    history.push({ role: "user", content: text });
+    history.push({ role: "user", parts: [{ text }] });
     userInput.value = "";
 
     const typing = document.createElement("div");
@@ -64,17 +62,30 @@
     typing.textContent = "Thinking...";
     chatBox.appendChild(typing);
 
-    const response = await fetch("/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ messages: history })
-});
-    const data = await response.json();
-    const reply = data.content[0].text;
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ history })
+      });
 
-    chatBox.removeChild(typing);
-    addMessage("assistant", reply);
-    history.push({ role: "assistant", content: reply });
+      const data = await response.json();
+      chatBox.removeChild(typing);
+
+      if (data.error) {
+        addMessage("assistant", "❌ Error: " + data.error);
+        return;
+      }
+
+      const reply = data.reply;
+      addMessage("assistant", reply);
+      history.push({ role: "model", parts: [{ text: reply }] });
+
+    } catch (err) {
+      chatBox.removeChild(typing);
+      addMessage("assistant", "❌ Something went wrong!");
+      console.error(err);
+    }
   }
 
   sendBtn.addEventListener("click", sendMessage);
